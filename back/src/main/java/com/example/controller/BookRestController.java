@@ -1,4 +1,4 @@
-package com.example.hello;
+package com.example.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,13 +9,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
-public class HelloController {
+public class BookRestController {
 
-	private final HelloService helloService;
-
-	@GetMapping("/hello")
-	public String hello() {
-		return helloService.getHello();
+    @GetMapping("/myAPI")
+	public String myAPI() {
+		return "";
 	}
 
 }
