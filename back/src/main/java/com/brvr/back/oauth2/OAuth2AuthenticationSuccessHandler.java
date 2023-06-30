@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import javax.servlet.http.Cookie;
@@ -42,14 +43,8 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
             return;
         }
         
-        Cookie cookie = new Cookie("jwt", token);
-        cookie.setPath("/");
-//        cookie.setHttpOnly(true);
-        cookie.setMaxAge(60*60);
-        response.addCookie(cookie);
-        
         clearAuthenticationAttributes(request, response);
-        getRedirectStrategy().sendRedirect(request, response, redirectUri);
+        getRedirectStrategy().sendRedirect(request, response, redirectUri + "/?token=" + token);
 //        getRedirectStrategy().sendRedirect(request, response, targetUrl);
     }
 

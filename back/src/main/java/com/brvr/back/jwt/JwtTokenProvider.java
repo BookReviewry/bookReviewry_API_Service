@@ -64,6 +64,7 @@ public class JwtTokenProvider {
                 .setSubject(name)
                 .claim(AUTHORITIES_KEY, authorities)
                 .claim("type", TYPE_ACCESS)
+                .claim("profile", "testProfile")
                 .setIssuedAt(now)   //토큰 발행 시간 정보
                 .setExpiration(new Date(now.getTime() + ExpireTime.ACCESS_TOKEN_EXPIRE_TIME))  //토큰 만료 시간 설정
                 .signWith(key, SignatureAlgorithm.HS256)
