@@ -13,13 +13,13 @@ public class GoogleOAuth2User extends OAuth2UserInfo {
         return (String) attributes.get("sub");
     }
 
-    @Override
-    public String getEmail() {
-        return (String) attributes.get("email");
-    }
+	@Override
+	public String getEmail() {
+		 return (String) attributes.get("email");
+	}
 
-    @Override
-    public String getName() {
-        return (String) attributes.get("name");
-    }
+	@Override
+	public String getName() {
+		return (String) attributes.get("name");
+	}
 }

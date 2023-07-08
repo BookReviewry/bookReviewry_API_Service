@@ -23,7 +23,9 @@ public class User extends BaseDateEntity {
     private String email;
 
     private String name;
-
+    
+    private String profile;
+    
     private String oauth2Id;
 
     @Enumerated(EnumType.STRING)
@@ -33,7 +35,7 @@ public class User extends BaseDateEntity {
     private Role role;
 
     public User update(OAuth2UserInfo oAuth2UserInfo) {
-        this.name = oAuth2UserInfo.getName();
+        this.email = oAuth2UserInfo.getEmail();
         this.oauth2Id = oAuth2UserInfo.getOAuth2Id();
 
         return this;
