@@ -26,7 +26,7 @@ public class BookController {
 	
 	private final NaverBookService naverBookService;
 	
-	@RequestMapping(value="/search",  produces="application/json;charset=UTF-8", method=RequestMethod.GET)
+	@RequestMapping(value="/",  produces="application/json;charset=UTF-8", method=RequestMethod.GET)
     public @ResponseBody String getBooks(@RequestParam String query, Integer offset) {
 		System.out.println("getUserProfile invoked");
 		// Naver API 호출해서 검색 결과 가져오기, offset 영향 받음

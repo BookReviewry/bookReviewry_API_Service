@@ -69,6 +69,12 @@
 		  <groupId>com.google.code.gson</groupId>
 		  <artifactId>gson</artifactId>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-resources-plugin -->
+		<dependency>
+		    <groupId>org.apache.maven.plugins</groupId>
+		    <artifactId>maven-resources-plugin</artifactId>
+		    <version>3.3.0</version>
+		</dependency>
 	</dependencies>
 
 	<build>

@@ -40,4 +40,10 @@ public class User extends BaseDateEntity {
 
         return this;
     }
+    
+    public User updateProfile(String profile) {
+        this.profile = profile;
+
+        return this;
+    }
 }

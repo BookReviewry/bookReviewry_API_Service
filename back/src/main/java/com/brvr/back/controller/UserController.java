@@ -8,9 +8,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.brvr.back.dao.UserDAO;
 import com.brvr.back.entity.User;
 import com.brvr.back.oauth2.GoogleOAuth2User;
 import com.brvr.back.repository.UserRepository;
@@ -24,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 public class UserController {
 	
 	private final UserRepository userRepository;
+	private final UserDAO userDAO;
+	
 	
     @GetMapping("/profile")
     public Map<String, Object> getUserProfile() {
@@ -31,7 +35,6 @@ public class UserController {
     	String email = SecurityContextHolder.getContext().getAuthentication().getName();
     	
     	Map<String, Object> map = new HashMap<>();
-    	
     	Optional<User> user = userRepository.findByEmail(email);
     	
     	if(!user.isEmpty()) {
@@ -44,23 +47,14 @@ public class UserController {
     }
     
     @PutMapping("/profile")
-    public Map<String, Object> updateUserProfile() {
-
+    public String updateUserProfile(@RequestBody String profile) {
+    	
+    	// get Auth from securityContextHoder
     	String name = SecurityContextHolder.getContext().getAuthentication().getName();
     	
-    	Map<String, Object> map = new HashMap<>();
+    	// update User Profile
+    	return userDAO.updateUserProfile(name, profile);
     	
-    	Optional<User> user = userRepository.findByEmail(name);
-    	
-    	/**
-    	 *  this method return boolean
-    	 */
-    	// 업데이트 유저 서비스 호출
-    	
-    	
-    	// 업데이트데이터에 따라서 return 데이터 세팅
-    	
-    	return map;
     }
 
 }
