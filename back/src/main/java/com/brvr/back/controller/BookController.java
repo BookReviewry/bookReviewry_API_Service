@@ -28,12 +28,16 @@ public class BookController {
 	
 	@RequestMapping(value="/",  produces="application/json;charset=UTF-8", method=RequestMethod.GET)
     public @ResponseBody String getBooks(@RequestParam String query, Integer offset) {
-		System.out.println("getUserProfile invoked");
-		// Naver API 호출해서 검색 결과 가져오기, offset 영향 받음
-		// DB 조회해서 검색 결과 가져오기, 전체 결과 가져옴
-		
-//    	Map<String, Object> map = naverBookService.getBooks(query, offset);
+		System.out.println(">> getUserProfile invoked");
 		String result = naverBookService.getBooks(query, offset);
+
+    	return result;
+    }
+	
+	@RequestMapping(value="/detail",  produces="application/json;charset=UTF-8", method=RequestMethod.GET)
+    public @ResponseBody String getBookDetail(@RequestParam String isbn) {
+		System.out.println(">> getBookDetail invoked");
+		String result = naverBookService.getBookDetail(isbn);
 
     	return result;
     }

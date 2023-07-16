@@ -9,16 +9,20 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.brvr.back.repository.BookRepository;
 import com.brvr.back.repository.UserRepository;
+import com.brvr.back.utils.ResponseWraper;
 import com.google.gson.Gson;
 
 import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.lang.Arrays;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
 
@@ -28,14 +32,60 @@ public class NaverBookService {
 	@Value("${naver.api.id}") String clientId;
 	@Value("${naver.api.secret}") String secret;
 	
+	final int DISPLAY_COUNT = 30;
+	private final BookRepository bookRepository;
+	private final ResponseWraper responseWraper;
+	
 	public String getBooks(String query,Integer offset) {
 		
 		System.out.println("getBooks invoked");
 		String encodedQuery = null;
+		int resultCode = 200;
         try {
         	encodedQuery = URLEncoder.encode(query, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("검색어 인코딩 실패",e);
+        }
+        String apiURL = "https://openapi.naver.com/v1/search/book?query=" + encodedQuery + "&display=" + DISPLAY_COUNT + "&start=" + (offset*DISPLAY_COUNT > 0 ? offset*DISPLAY_COUNT : 1) ;
+
+        Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("X-Naver-Client-Id", clientId);
+        requestHeaders.put("X-Naver-Client-Secret", secret);
+        String responseBody = get(apiURL,requestHeaders);
+        Gson gson = new Gson();
+        Map<String, Object> map = gson.fromJson(responseBody, Map.class);
+ 
+        /*
+         * 값이 데이터 베이스에 있으면 우선 적으로 노출시키기 위해 추가
+         */
+	   ArrayList<Map<String, Object>> items = (ArrayList) map.get("items");
+	   if(!items.isEmpty()) {
+		   for(Map<String, Object> book : items) {
+			   String isbn = (String) book.get("isbn");
+			   if(!bookRepository.findByIsbn(isbn).isEmpty()) {
+				   book.put("isExist", true);
+			   }else {
+				   book.put("isExist", false);
+			   }
+		   }
+	   }else {
+		   resultCode = 500;
+	   }
+        
+        Map<String, Object> result = responseWraper.getProcessedResponse(map, resultCode);
+        
+        String jsonData = gson.toJson(result).toString();
+
+		return jsonData;
+	}
+	
+	public String getBookDetail(String isbn) {
+		System.out.println("getBookDetail invoked");
+		String encodedQuery = null;
+        try {
+        	encodedQuery = URLEncoder.encode(isbn, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("ISBN 인코딩 실패",e);
         }
 
         String apiURL = "https://openapi.naver.com/v1/search/book?query=" + encodedQuery;
@@ -47,7 +97,9 @@ public class NaverBookService {
         Gson gson = new Gson();
         Map<String, Object> map = gson.fromJson(responseBody, Map.class);
         
-        String jsonData = gson.toJson(map).toString();
+        Map<String, Object> result = responseWraper.getProcessedResponse(map, 200);
+        
+        String jsonData = gson.toJson(result).toString();
 
 		return jsonData;
 	}
@@ -93,6 +145,8 @@ public class NaverBookService {
             String line;
             while ((line = lineReader.readLine()) != null) {
                 responseBody.append(line);
+                
+                
             }
 
             return responseBody.toString();

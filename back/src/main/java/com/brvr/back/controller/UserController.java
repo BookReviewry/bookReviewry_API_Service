@@ -28,7 +28,12 @@ public class UserController {
 	private final UserRepository userRepository;
 	private final UserDAO userDAO;
 	
-	
+	/**
+	 * METHOD: GET
+	 * PATH: user/profile
+	 * Description: return current user's profile
+	 * @return
+	 */
     @GetMapping("/profile")
     public Map<String, Object> getUserProfile() {
 
@@ -46,6 +51,12 @@ public class UserController {
     	return map;
     }
     
+	/**
+	 * METHOD: PUT
+	 * PATH: user/profile
+	 * Description: update user profile and return result
+	 * @return
+	 */
     @PutMapping("/profile")
     public String updateUserProfile(@RequestBody String profile) {
     	
