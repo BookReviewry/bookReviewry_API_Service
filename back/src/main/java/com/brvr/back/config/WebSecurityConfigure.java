@@ -39,7 +39,7 @@ public class WebSecurityConfigure {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
         http.authorizeRequests()
-                .antMatchers("/", "/oauth2/**", "/login/**", "/user/**", "/books","/books/**").permitAll()
+                .antMatchers("/", "/oauth2/**", "/login/**", "/user/**", "/books","/books/**", "/reviews/**", "/reviews").permitAll()
                 .anyRequest().authenticated();
 
         http.oauth2Login()

@@ -12,6 +12,5 @@ import javax.persistence.*;
 public class Book extends BaseDateEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private String isbn;
 }
