@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -20,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.brvr.back.dao.ReviewDAO;
 import com.brvr.back.entity.Review;
 import com.brvr.back.entity.User;
+import com.brvr.back.service.ReviewService;
 import com.brvr.back.utils.ResponseWraper;
 import com.google.gson.Gson;
 
@@ -33,15 +36,19 @@ public class ReviewController {
 	
 	private final ReviewDAO reviewDAO;
 	private final ResponseWraper responseWraper;
+	private final ReviewService reviewService;
 	
 	@GetMapping(value="/",  produces="application/json;charset=UTF-8")
     public @ResponseBody String getReviewByISBN(@RequestParam String isbn) {
 		/**
 		 * isbn 으로 검색
 		 */
+		
 		Gson gson = new Gson();
 		
 		// 나중에 서비스로 빼두기 **
+		
+		
 		ArrayList<Optional<Review>> optionalReviews = reviewDAO.readReview(isbn);
 		ArrayList<Map<String, Object>> reviews = new ArrayList<>();
 		Map<String,Object> result = null;
@@ -91,70 +98,21 @@ public class ReviewController {
     	return jsonData;
     }
 	
+	@Transactional
 	@PostMapping(value="/",  produces="application/json;charset=UTF-8")
-    public @ResponseBody String postReview(@RequestBody Map<String,Object> review) {
-		/**
-		 * isbn 으로 검색
-		 */
+    public @ResponseBody String postReview(@RequestBody Map<String,Object> requestBody) {
 		
-		System.out.println(review.toString());
-		System.out.println(">> postReview invoked");
-		// 나중에 서비스로 빼두기 **
-		String jsonData = "";
+		System.out.println(">> Controller postReview invoked");
+		String jsonResult = reviewService.postReview(requestBody);
 		
-		Gson gson = new Gson();
-		
-    	String email = SecurityContextHolder.getContext().getAuthentication().getName();
-    	
-    	if(email.isBlank() || email == "anonymousUser") {
-    		Map<String,Object> result = responseWraper.getProcessedResponse(null, 401);
-
-    		jsonData = gson.toJson(result).toString();
-    		
-    		return jsonData;
-    	}
-    	
-		String author = email;
-		String isbn = (String) review.get("isbn");
-		String content = (String) review.get("content");
-		String category = (String) review.get("category");
-		
-		boolean resultCode = reviewDAO.createReview(author, isbn, content, category);
-		
-		if(resultCode) {
-    		Map<String,Object> result = responseWraper.getProcessedResponse(null, 200);
-    		jsonData = gson.toJson(result).toString();
-		}else {
-    		Map<String,Object> result = responseWraper.getProcessedResponse(null, 500);
-    		jsonData = gson.toJson(result).toString();
-		}
-		
-    	return jsonData;
+    	return jsonResult;
     }
 	
 	//TODO
 	@DeleteMapping(value="/",  produces="application/json;charset=UTF-8")
     public @ResponseBody String deleteReview(@RequestParam String isbn, @RequestParam String id) {
-		/**
-		 * isbn 으로 검색
-		 */
-		Gson gson = new Gson();
-		String jsonData = "";
-		String email = SecurityContextHolder.getContext().getAuthentication().getName();
-		
-    	if(email.isBlank() || email == "anonymousUser") {
-    		Map<String,Object> result = responseWraper.getProcessedResponse(null, 401);
 
-    		jsonData = gson.toJson(result).toString();
-    		
-    		return jsonData;
-    	}
-		
-    	// email, id 값 일치하는 것 찾아서 삭제하기
-    	
-    	
-		Map<String,Object> result = responseWraper.getProcessedResponse(null, 200);
-		jsonData = gson.toJson(result).toString();
+		String jsonData = "";
 
 		
     	return jsonData;

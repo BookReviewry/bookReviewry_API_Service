@@ -56,4 +56,13 @@ public class ReviewDAOImpl implements ReviewDAO {
 		Optional<Review> review = reviewRepostory.findByIsbn(isbn);
 		return review;
 	}
+
+	@Override
+	public boolean checkIsExist(String isbn, String author) {
+		Optional<Review> review = reviewRepostory.findAllByIsbnAndAuthor(isbn, author);
+		if(!review.isEmpty()) {
+			return true;
+		}
+		return false;
+	}
 }
