@@ -28,5 +28,7 @@ public class Review extends BaseDateEntity{
     private String content;
     
     private String category;
+    
+    private Integer eq;
 
 }

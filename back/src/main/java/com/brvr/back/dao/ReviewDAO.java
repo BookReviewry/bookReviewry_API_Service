@@ -6,7 +6,7 @@ import java.util.Optional;
 import com.brvr.back.entity.Review;
 
 public interface ReviewDAO {
-	 abstract boolean createReview(String author, String isbn, String content, String category);
-	 abstract ArrayList<Optional<Review>> readReview(String isbn);
-	 abstract boolean checkIsExist(String isbn, String author);
+	boolean createReview(String author, String isbn, String content, String category, Integer eq);
+	ArrayList<Optional<Review>> readReview(String isbn);
+	boolean checkIsExist(String isbn, String author);
 }

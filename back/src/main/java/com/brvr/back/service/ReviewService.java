@@ -40,6 +40,7 @@ public class ReviewService {
 		String isbn = (String) requestBody.get("isbn");
 		String content = (String) requestBody.get("content");
 		String category = (String) requestBody.get("category");
+		Integer eq = (Integer) requestBody.get("eq");
 		
     	// 이미 해당 도서에 댓글이 있을 경우 리턴
 		boolean isExist = reviewDAO.checkIsExist(isbn, author);
@@ -51,7 +52,7 @@ public class ReviewService {
     		return jsonData;
 		}
 		
-		boolean resultCode = reviewDAO.createReview(author, isbn, content, category);
+		boolean resultCode = reviewDAO.createReview(author, isbn, content, category, eq);
 		
 		if(resultCode) {
     		result = responseWraper.getProcessedResponse(null, 200);

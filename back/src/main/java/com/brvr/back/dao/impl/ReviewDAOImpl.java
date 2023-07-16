@@ -20,8 +20,10 @@ public class ReviewDAOImpl implements ReviewDAO {
 	private final ReviewRepostory reviewRepostory;
 	
 	//CREATE
+
+	@Override
 	@Transactional
-	public boolean createReview(String author, String isbn, String content, String category) {
+	public boolean createReview(String author, String isbn, String content, String category, Integer eq) {
 		
 		try {
 			reviewRepostory.save(
@@ -29,13 +31,15 @@ public class ReviewDAOImpl implements ReviewDAO {
 					.author(author)
 					.isbn(isbn)
 					.content(content)
-					.category(category).build());
+					.category(category)
+					.eq(eq).build());
 		} catch (Exception e) {
 			return false;
 		}
 		
 		return true;
 	}
+	
 	
 	@Transactional
 	public ArrayList<Optional<Review>> readReview(String isbn) {
@@ -65,4 +69,5 @@ public class ReviewDAOImpl implements ReviewDAO {
 		}
 		return false;
 	}
+
 }
