@@ -30,5 +30,11 @@ public class Review extends BaseDateEntity{
     private String category;
     
     private Integer eq;
+    
+    public Review updateContent(String profile) {
+        this.content = profile;
+
+        return this;
+    }
 
 }

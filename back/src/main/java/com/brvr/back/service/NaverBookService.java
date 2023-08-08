@@ -12,11 +12,14 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import com.brvr.back.entity.Review;
 import com.brvr.back.repository.BookRepository;
+import com.brvr.back.repository.ReviewRepostory;
 import com.brvr.back.repository.UserRepository;
 import com.brvr.back.utils.ResponseWraper;
 import com.google.gson.Gson;
@@ -35,6 +38,7 @@ public class NaverBookService {
 	final int DISPLAY_COUNT = 30;
 	private final BookRepository bookRepository;
 	private final ResponseWraper responseWraper;
+	private final ReviewRepostory reviewRepostory;
 	
 	public String getBooks(String query,Integer offset) {
 		
@@ -67,6 +71,20 @@ public class NaverBookService {
 			   }else {
 				   book.put("isExist", false);
 			   }
+			   int eqSum = 0;
+			   ArrayList<Optional<Review>> reviewList = reviewRepostory.findAllByIsbn(isbn);
+			   for (Optional<Review> review : reviewList) {
+				   if(!review.isEmpty()) {
+					   int eq = review.get().getEq();
+					   eqSum += eq;
+				   }
+			   }
+			   if(reviewList.size() > 0) {				   
+				   book.put("eq", eqSum/reviewList.size());
+			   }else {
+				   book.put("eq", 0);
+			   }
+			   
 		   }
 	   }else {
 		   resultCode = 500;

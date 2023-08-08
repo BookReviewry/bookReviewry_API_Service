@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.brvr.back.dao.ReviewDAO;
 import com.brvr.back.entity.Review;
+import com.brvr.back.entity.User;
 import com.brvr.back.repository.ReviewRepostory;
 import com.brvr.back.repository.UserRepository;
 
@@ -40,6 +41,21 @@ public class ReviewDAOImpl implements ReviewDAO {
 		return true;
 	}
 	
+	@Override
+	@Transactional
+	public boolean updateReview(String reviewCd, String content) {
+		
+		Optional<Review> review = reviewRepostory.findById(Long.parseLong(reviewCd));
+		
+		
+    	if(review.isEmpty()) {
+    		return false;
+    	}else {
+    		reviewRepostory.save(review.get().updateContent(content));
+    		return true;
+    	}
+	}
+	
 	
 	@Transactional
 	public ArrayList<Optional<Review>> readReview(String isbn) {
@@ -53,13 +69,6 @@ public class ReviewDAOImpl implements ReviewDAO {
 		Optional<Review> review = reviewRepostory.findByIsbn(isbn);
 		return review;
 	}
-	
-	//DELETE
-	@Transactional
-	public Optional<Review> deleteReview(String isbn) {
-		Optional<Review> review = reviewRepostory.findByIsbn(isbn);
-		return review;
-	}
 
 	@Override
 	public boolean checkIsExist(String isbn, String author) {
@@ -68,6 +77,20 @@ public class ReviewDAOImpl implements ReviewDAO {
 			return true;
 		}
 		return false;
+	}
+
+
+	@Override
+	public ArrayList<Optional<Review>> deleteReview(String isbn, String reviewCd) {
+		reviewRepostory.deleteById(Long.parseLong(reviewCd));
+		return null;
+	}
+
+
+	@Override
+	public Optional<Review> readReviewByReviewCd(String reviewCd) {
+		Optional<Review> review = reviewRepostory.findById(Long.parseLong(reviewCd));
+		return review;
 	}
 
 }

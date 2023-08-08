@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -109,13 +110,20 @@ public class ReviewController {
     }
 	
 	//TODO
-	@DeleteMapping(value="/",  produces="application/json;charset=UTF-8")
-    public @ResponseBody String deleteReview(@RequestParam String isbn, @RequestParam String id) {
-
-		String jsonData = "";
-
+	@PutMapping(value="/",  produces="application/json;charset=UTF-8")
+    public @ResponseBody String updateReview(@RequestBody Map<String,Object> requestBody) {
+		String jsonResult = reviewService.updateReview((String)requestBody.get("reviewCd") , (String)requestBody.get("content"));
 		
-    	return jsonData;
+    	return jsonResult;
+    }
+	
+	//TODO
+	@DeleteMapping(value="/",  produces="application/json;charset=UTF-8")
+    public @ResponseBody String deleteReview(@RequestParam String isbn, @RequestParam String reviewCd) {
+
+		String jsonResult = reviewService.deleteReview(isbn, reviewCd);
+		
+    	return jsonResult;
     }
 
 }
