@@ -66,11 +66,11 @@ public class NaverBookService {
 	   if(!items.isEmpty()) {
 		   for(Map<String, Object> book : items) {
 			   String isbn = (String) book.get("isbn");
-			   if(!bookRepository.findByIsbn(isbn).isEmpty()) {
-				   book.put("isExist", true);
-			   }else {
-				   book.put("isExist", false);
-			   }
+//			   if(!bookRepository.findByIsbn(isbn).isEmpty()) {
+//				   book.put("isExist", true);
+//			   }else {
+//				   book.put("isExist", false);
+//			   }
 			   int eqSum = 0;
 			   ArrayList<Optional<Review>> reviewList = reviewRepostory.findAllByIsbn(isbn);
 			   for (Optional<Review> review : reviewList) {
@@ -81,8 +81,10 @@ public class NaverBookService {
 			   }
 			   if(reviewList.size() > 0) {				   
 				   book.put("eq", eqSum/reviewList.size());
+				   book.put("isExist", true);
 			   }else {
 				   book.put("eq", 0);
+				   book.put("isExist", false);
 			   }
 			   
 		   }
