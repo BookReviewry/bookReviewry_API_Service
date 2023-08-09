@@ -58,13 +58,13 @@ public class UserController {
 	 * @return
 	 */
     @PutMapping("/profile")
-    public String updateUserProfile(@RequestBody String profile) {
+    public String updateUserProfile(@RequestBody Map<String,Object> requestBody) {
     	
     	// get Auth from securityContextHoder
     	String name = SecurityContextHolder.getContext().getAuthentication().getName();
     	
     	// update User Profile
-    	return userDAO.updateUserProfile(name, profile);
+    	return userDAO.updateUserProfile(name, (String)requestBody.get("profileTxt"));
     	
     }
 

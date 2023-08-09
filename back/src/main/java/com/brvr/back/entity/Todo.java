@@ -1,5 +1,6 @@
 package com.brvr.back.entity;
 
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -16,26 +17,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-public class Review extends BaseDateEntity{
-	
-    @Id
+public class Todo extends BaseDateEntity{
+	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    private String author;
-
-    private String isbn;
-    
-    private String content;
-    
-    private String category;
-    
-    private Integer eq;
-    
-    public Review updateContent(String profile) {
-        this.content = profile;
-
-        return this;
-    }
-
+	
+	private String email;
+	
+	private String isbn;
 }

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import com.brvr.back.entity.Review;
@@ -44,7 +45,7 @@ public class NaverBookService {
 		
 		System.out.println("getBooks invoked");
 		String encodedQuery = null;
-		int resultCode = 200;
+		HttpStatus resultCode = HttpStatus.OK;
         try {
         	encodedQuery = URLEncoder.encode(query, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -66,11 +67,7 @@ public class NaverBookService {
 	   if(!items.isEmpty()) {
 		   for(Map<String, Object> book : items) {
 			   String isbn = (String) book.get("isbn");
-//			   if(!bookRepository.findByIsbn(isbn).isEmpty()) {
-//				   book.put("isExist", true);
-//			   }else {
-//				   book.put("isExist", false);
-//			   }
+
 			   int eqSum = 0;
 			   ArrayList<Optional<Review>> reviewList = reviewRepostory.findAllByIsbn(isbn);
 			   for (Optional<Review> review : reviewList) {
@@ -89,7 +86,7 @@ public class NaverBookService {
 			   
 		   }
 	   }else {
-		   resultCode = 500;
+		   resultCode = HttpStatus.NO_CONTENT;
 	   }
         
         Map<String, Object> result = responseWraper.getProcessedResponse(map, resultCode);
@@ -101,13 +98,14 @@ public class NaverBookService {
 	
 	public String getBookDetail(String isbn) {
 		System.out.println("getBookDetail invoked");
+		
 		String encodedQuery = null;
         try {
         	encodedQuery = URLEncoder.encode(isbn, "UTF-8");
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException("ISBN 인코딩 실패",e);
         }
-
+        HttpStatus resultCode = HttpStatus.OK;
         String apiURL = "https://openapi.naver.com/v1/search/book?query=" + encodedQuery;
 
         Map<String, String> requestHeaders = new HashMap<>();
@@ -117,7 +115,34 @@ public class NaverBookService {
         Gson gson = new Gson();
         Map<String, Object> map = gson.fromJson(responseBody, Map.class);
         
-        Map<String, Object> result = responseWraper.getProcessedResponse(map, 200);
+        ArrayList<Map<String, Object>> items = (ArrayList) map.get("items");
+ 	   if(!items.isEmpty()) {
+ 		   for(Map<String, Object> book : items) {
+ 			   
+ 			   int eqSum = 0;
+ 			   ArrayList<Optional<Review>> reviewList = reviewRepostory.findAllByIsbn(isbn);
+ 			   for (Optional<Review> review : reviewList) {
+ 				   if(!review.isEmpty()) {
+ 					   int eq = review.get().getEq();
+ 					   eqSum += eq;
+ 				   }
+ 			   }
+ 			   if(reviewList.size() > 0) {				   
+ 				   book.put("eq", eqSum/reviewList.size());
+ 				   book.put("reviewCount", reviewList.size());
+ 				   book.put("isExist", true);
+ 			   }else {
+ 				   book.put("eq", 0);
+ 				   book.put("isExist", false);
+ 				   book.put("reviewCount", 0);
+ 			   }
+ 			   
+ 		   }
+ 	   }else {
+ 		  resultCode = HttpStatus.NO_CONTENT;
+ 	   }
+ 	   
+        Map<String, Object> result = responseWraper.getProcessedResponse(map, resultCode);
         
         String jsonData = gson.toJson(result).toString();
 
