@@ -11,8 +11,12 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -147,6 +151,105 @@ public class NaverBookService {
         String jsonData = gson.toJson(result).toString();
 
 		return jsonData;
+	}
+	
+	public Map<String, Object> getBookDetailMap(String isbn) {
+		System.out.println("getBookDetail invoked");
+		
+		String encodedQuery = null;
+        try {
+        	encodedQuery = URLEncoder.encode(isbn, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("ISBN 인코딩 실패",e);
+        }
+        HttpStatus resultCode = HttpStatus.OK;
+        String apiURL = "https://openapi.naver.com/v1/search/book?query=" + encodedQuery;
+
+        Map<String, String> requestHeaders = new HashMap<>();
+        requestHeaders.put("X-Naver-Client-Id", clientId);
+        requestHeaders.put("X-Naver-Client-Secret", secret);
+        String responseBody = get(apiURL,requestHeaders);
+        Gson gson = new Gson();
+        Map<String, Object> map = gson.fromJson(responseBody, Map.class);
+        
+        ArrayList<Map<String, Object>> items = (ArrayList) map.get("items");
+ 	   if(!items.isEmpty()) {
+ 		   for(Map<String, Object> book : items) {
+ 			   
+ 			   int eqSum = 0;
+ 			   ArrayList<Optional<Review>> reviewList = reviewRepostory.findAllByIsbn(isbn);
+ 			   for (Optional<Review> review : reviewList) {
+ 				   if(!review.isEmpty()) {
+ 					   int eq = review.get().getEq();
+ 					   eqSum += eq;
+ 				   }
+ 			   }
+ 			   if(reviewList.size() > 0) {				   
+ 				   book.put("eq", eqSum/reviewList.size());
+ 				   book.put("reviewCount", reviewList.size());
+ 				   book.put("isExist", true);
+ 			   }else {
+ 				   book.put("eq", 0);
+ 				   book.put("isExist", false);
+ 				   book.put("reviewCount", 0);
+ 			   }
+ 			   
+ 		   }
+ 	   }else {
+ 		  resultCode = HttpStatus.NO_CONTENT;
+ 	   }
+ 	   return map;
+	}
+	
+	public String getBookMain() {
+		Gson gson = new Gson();
+		Map<String, Object> resultMap = new HashMap<String, Object>();
+		
+		// 1. 리뷰가 최근에 달린 책 순서
+		
+		// 2. eq 점수가 높은 순서
+		List<Map.Entry<String, Integer>> booksOrderByEq = getBookByEqAsc();
+		ArrayList<Map<String,Object>> eqAsc = new ArrayList<Map<String,Object>>();
+		
+		for (Entry<String, Integer> entry : booksOrderByEq) {
+			String isbn = entry.getKey();
+			eqAsc.add(getBookDetailMap(isbn));
+		}
+		
+		// 3. 리뷰가 많이 달린 순서
+		
+		// 조합해서 Naver Book api 
+		
+		resultMap.put("eqAsc", eqAsc);
+		
+		Map<String, Object> result = responseWraper.getProcessedResponse(resultMap, HttpStatus.OK);
+		String jsonData = gson.toJson(result).toString();
+		return jsonData;
+	}
+	
+	public List<Map.Entry<String, Integer>> getBookByEqAsc() {
+		List<Review> reviews = reviewRepostory.findAll();
+		
+		Map<String, Integer> map = new HashMap<>();
+		
+		for (Review review : reviews) {
+			map.put(review.getIsbn(), map.getOrDefault(map.get(review.getIsbn()), 0)+review.getEq());
+		}
+		
+		for (Map.Entry<String, Integer> entry : map.entrySet()) {
+			String key = entry.getKey();
+			System.out.println("key" + key);
+			Integer val = entry.getValue();
+			ArrayList<Optional<Review>> review = reviewRepostory.findAllByIsbn(key);
+			
+			if(review.size()>0) {
+				map.put(key, val/review.size());
+			}	
+		}
+		
+		List<Map.Entry<String, Integer>> entryList = new LinkedList<>(map.entrySet());
+		entryList.sort(Map.Entry.comparingByValue());
+		return entryList;
 	}
 	
     private String get(String apiUrl, Map<String, String> requestHeaders){

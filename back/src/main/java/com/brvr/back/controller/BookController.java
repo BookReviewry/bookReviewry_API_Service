@@ -41,4 +41,12 @@ public class BookController {
 
     	return result;
     }
+	
+	@RequestMapping(value="/main",  produces="application/json;charset=UTF-8", method=RequestMethod.GET)
+    public @ResponseBody String getBookMain() {
+		System.out.println(">> getBookDetail invoked");
+		String result = naverBookService.getBookMain();
+
+    	return result;
+    }
 }
