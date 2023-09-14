@@ -93,4 +93,16 @@ public class ReviewDAOImpl implements ReviewDAO {
 		return review;
 	}
 
+	@Override
+	public Optional<Review> readReview(String email, String isbn) {
+		Optional<Review> review = reviewRepostory.findAllByIsbnAndAuthor(isbn, email);
+		return review;
+	}
+	
+	@Override
+	public ArrayList<Optional<Review>> readReviewByEmail(String email) {
+		 ArrayList<Optional<Review>> reviews = reviewRepostory.findAllByAuthor(email);
+		return reviews;
+	}
+
 }

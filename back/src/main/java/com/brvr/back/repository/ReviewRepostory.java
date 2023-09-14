@@ -11,4 +11,5 @@ public interface ReviewRepostory extends JpaRepository<Review, Long>{
 	 Optional<Review> findByIsbn(String isbn);
 	 ArrayList<Optional<Review>> findAllByIsbn(String isbn);
 	 Optional<Review> findAllByIsbnAndAuthor(String isbn, String Author);
+	 ArrayList<Optional<Review>> findAllByAuthor(String Author);
 }
