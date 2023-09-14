@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.brvr.back.dao.UserDAO;
@@ -35,9 +36,7 @@ public class UserController {
 	 * @return
 	 */
     @GetMapping("/profile")
-    public Map<String, Object> getUserProfile() {
-
-    	String email = SecurityContextHolder.getContext().getAuthentication().getName();
+    public Map<String, Object> getUserProfile(@RequestParam String email) {
     	
     	Map<String, Object> map = new HashMap<>();
     	Optional<User> user = userRepository.findByEmail(email);
