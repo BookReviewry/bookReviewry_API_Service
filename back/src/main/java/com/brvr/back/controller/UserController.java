@@ -46,6 +46,18 @@ public class UserController {
     public String getUserProfile(@RequestParam String email) {
     	return userService.getUserProfile(email);
 	}
+	
+	/**
+	 * METHOD: GET
+	 * PATH: user/profile
+	 * Description: return current user's profile
+	 * @return
+	 */
+	@GetMapping(value="/profile/personal",  produces="application/json;charset=UTF-8")
+    public String getUserPersonalProfile() {
+		String name = SecurityContextHolder.getContext().getAuthentication().getName();
+    	return userService.getUserProfile(name);
+	}
 	/**
 	 * METHOD: PUT
 	 * PATH: user/profile
@@ -59,7 +71,7 @@ public class UserController {
     	String name = SecurityContextHolder.getContext().getAuthentication().getName();
     	
     	// update User Profile
-    	return userDAO.updateUserProfile(name, (String)requestBody.get("profileTxt"));
+    	return userDAO.updateUserProfile(name, (String)requestBody.get("profile"));
     	
     }
     

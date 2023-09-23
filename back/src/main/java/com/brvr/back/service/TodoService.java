@@ -96,4 +96,9 @@ public class TodoService {
 		
     	return jsonData;
 	}
+	
+	public Integer getTodoCount(String email) {
+		ArrayList<Optional<Todo>> optionalTodos = todoDAO.readTodo(email);
+		return optionalTodos.size();
+	}
 }

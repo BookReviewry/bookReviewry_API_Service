@@ -210,6 +210,11 @@ public class ReviewService {
     	return jsonData;
 	}
 	
+	public Integer getReviewCount(String email) {
+		ArrayList<Optional<Review>> optionalReviews = reviewDAO.readReviewByEmail(email);
+		return optionalReviews.size();
+	}
+	
 	public String getBookCase(String email) {
 	Gson gson = new Gson();
 		
@@ -256,4 +261,6 @@ public class ReviewService {
 		
     	return jsonData;
 	}
+	
+	
 }

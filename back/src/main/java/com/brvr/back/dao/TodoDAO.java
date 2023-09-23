@@ -10,4 +10,5 @@ public interface TodoDAO {
 	boolean createTodo(String isbn);
 	ArrayList<Optional<Todo>> readTodo();
 	boolean deleteTodo(String isbn);
+	ArrayList<Optional<Todo>> readTodo(String email);
 }

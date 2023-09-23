@@ -21,12 +21,16 @@ public class UserService {
 	private final ResponseWraper responseWraper;
 	private final UserRepository userRepository;
 	private final UserDAO userDAO;
+	private final ReviewService reviewService;
+	private final TodoService todoService;
 	
 	public String getUserProfile(String email) {
 		
 
     	Map<String, Object> map = new HashMap<>();
     	Optional<User> user = userRepository.findByEmail(email);
+    	int reviewCount = reviewService.getReviewCount(email);
+    	int todoCount = todoService.getTodoCount(email);
 		Map<String,Object> result = null;
 		
     	HttpStatus status = HttpStatus.BAD_REQUEST;
@@ -34,6 +38,8 @@ public class UserService {
     		map.put("name", user.get().getName());
     		map.put("email", user.get().getEmail());
     		map.put("profile", user.get().getProfile());
+    		map.put("reviewCount", reviewCount);
+    		map.put("todoCount", todoCount);
     		status =  HttpStatus.OK;
     	}
     	

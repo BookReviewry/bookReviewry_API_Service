@@ -45,6 +45,14 @@ public class TodoDAOImpl implements TodoDAO {
 		
 		return todolist;
 	}
+	
+	@Override
+	public ArrayList<Optional<Todo>> readTodo(String email) {
+		// TODO Auto-generated method stub
+		ArrayList<Optional<Todo>> todolist = todoRepository.findAllByEmail(email);
+		
+		return todolist;
+	}
 
 	@Override
 	public boolean deleteTodo(String todoId) {
